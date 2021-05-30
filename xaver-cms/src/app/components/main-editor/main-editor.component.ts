@@ -11,6 +11,7 @@ import {Narrative} from 'src/app/shared/models/narrative';
 import {Quest} from 'src/app/shared/models/quest';
 import {ChaseService} from 'src/app/shared/services/chase.service';
 import {deserialize, serialize} from 'typescript-json-serializer';
+import {WarningDialogComponent} from '../warning-dialog/warning-dialog.component';
 
 @Component({
   selector: 'main-chase-editor',
@@ -222,6 +223,39 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
 
     const dialogRef =
         this.dialog.open(SelectChasePushDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(data => {
+      console.log('Dialog output:', data);
+      if (data != '') {
+        if (data != 'new') {
+          // give warning to overwrite data on server
+          const dialogConfigWarn = new MatDialogConfig();
+          dialogConfigWarn.disableClose = true;
+          dialogConfigWarn.autoFocus = true;
+          dialogConfigWarn.data = {
+            warning_text: 'Achtung! Daten in dieser Jagd werden überschrieben!'
+          }
+
+          const dialogWarn =
+              this.dialog.open(WarningDialogComponent, dialogConfigWarn)
+
+          dialogWarn.afterClosed().subscribe(data_warn => {
+            if (data_warn != 'ok') {
+              console.log('Warning dialog did not return ok. aborting...');
+            } else {
+              console.log('Pushing chase ' + data);
+              // do push to server
+              //this.chaseService.createChase
+            }
+          })
+        } else {
+          //push new chase with random Id:
+          this.chase.metaData.chaseId = this.generateRandomId();
+          console.log('Pushing new chase ' + this.chase.metaData.chaseId);
+          this.chaseService.createChase(this.chase);
+        }
+      }
+    });
   }
 
   loadChaseFromServer(): void {
@@ -249,5 +283,14 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  generateRandomId(): string {
+    let text = "";
+    let possible_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    for (let i = 0; i < 16; i++) {
+      text += possible_chars.charAt(Math.floor(Math.random() * possible_chars.length));
+    }
+      return text;
   }
 }

@@ -52,6 +52,7 @@ import {
 import { LoggedOutComponent } from './components/logged-out/logged-out.component';
 import { SelectChaseDialogComponent } from './components/select-chase-dialog/select-chase-dialog.component';
 import { SelectChasePushDialogComponent } from './components/select-chase-push-dialog/select-chase-push-dialog.component';
+import { WarningDialogComponent } from './components/warning-dialog/warning-dialog.component';
 
 const config = {
   issuer: 'https://dev-379215.okta.com/oauth2/default',
@@ -97,7 +98,8 @@ const appRoutes: Routes = [
     QuestEditorComponent,
     LoggedOutComponent,
     SelectChaseDialogComponent,
-    SelectChasePushDialogComponent
+    SelectChasePushDialogComponent,
+    WarningDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -142,7 +144,9 @@ const appRoutes: Routes = [
   ],
   entryComponents: [
     CreateChaseDialogComponent,
-    SelectChaseDialogComponent
+    SelectChaseDialogComponent,
+    SelectChasePushDialogComponent,
+    WarningDialogComponent
   ],
   providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
   { provide: MatDialogRef, useValue: {} }, { provide: OKTA_CONFIG, useValue: config }],
