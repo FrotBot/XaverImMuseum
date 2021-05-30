@@ -8,6 +8,7 @@ import { LogicType, SolutionTerm } from '../shared/models/solution_term';
 import { CombineLatestSubscriber } from 'rxjs/internal/observable/combineLatest';
 import { Description } from '../shared/models/description';
 import { MainEditorComponent } from '../components/main-editor/main-editor.component'
+import { ChaseList, ChaseMetaData } from 'src/app/shared/models/chase';
 
 @Component({
   selector: 'app-quest-editor',

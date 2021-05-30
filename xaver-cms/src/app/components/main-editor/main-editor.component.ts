@@ -1,13 +1,15 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Chase, ChaseMetaData } from 'src/app/shared/models/chase';
-import { Quest } from 'src/app/shared/models/quest';
-import { Narrative } from 'src/app/shared/models/narrative';
-import { GameElement } from 'src/app/shared/models/gameElement';
-import { ChaseService } from 'src/app/shared/services/chase.service';
-import { deserialize, serialize } from 'typescript-json-serializer';
-import { SELECT_PANEL_INDENT_PADDING_X } from '@angular/material/select';
-import { Description } from 'src/app/shared/models/description';
-import { saveAs } from 'file-saver';
+import {AfterViewInit, Component, NgModule, OnInit, ViewChild} from '@angular/core';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {SELECT_PANEL_INDENT_PADDING_X} from '@angular/material/select';
+import {saveAs} from 'file-saver';
+import {SelectChaseDialogComponent} from 'src/app/components/select-chase-dialog/select-chase-dialog.component'
+import {Chase, ChaseList, ChaseMetaData} from 'src/app/shared/models/chase';
+import {Description} from 'src/app/shared/models/description';
+import {GameElement} from 'src/app/shared/models/gameElement';
+import {Narrative} from 'src/app/shared/models/narrative';
+import {Quest} from 'src/app/shared/models/quest';
+import {ChaseService} from 'src/app/shared/services/chase.service';
+import {deserialize, serialize} from 'typescript-json-serializer';
 
 @Component({
   selector: 'main-chase-editor',
@@ -16,13 +18,13 @@ import { saveAs } from 'file-saver';
 })
 
 export class MainEditorComponent implements OnInit, AfterViewInit {
-
   public chase: Chase;
   selectedQuest: number;
-  chaseID = "julia"; //{"xaver", "julia", "silke"}
-  title: string = "";
-  author: string = "";
-  description: string = "";
+  chaseID = 'julia';  //{"xaver", "julia", "silke"}
+  title: string = '';
+  author: string = '';
+  description: string = '';
+  chaseList = new ChaseList();
 
   @ViewChild('quest_editor') questEditor;
 
@@ -39,55 +41,56 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
 
   // reads all the info from this.chase and writes onto class members
   getDataFromChase(): void {
-    this.selectedQuest = 1;//todo change again
+    this.selectedQuest = 1;  // todo change again
 
     this.title = this.chase.metaData.title;
     this.description = this.chase.metaData.description;
     this.author = this.chase.metaData.author;
 
-    //console.log("Selected Quest Id: " + this.selectedQuest);
-    //console.log("Loading values from Chase", this.chase.metaData.title);
+    // console.log("Selected Quest Id: " + this.selectedQuest);
+    // console.log("Loading values from Chase", this.chase.metaData.title);
 
-    //write questList string
-    console.log("Contained GameElements (" + this.chase.gameElements.size + "):");
+    // write questList string
+    console.log(
+        'Contained GameElements (' + this.chase.gameElements.size + '):');
     this.questList = [];
     this.narrativeList = [];
 
     this.chase.gameElements.forEach((value: GameElement, key: Number) => {
       let title_with_id = value.title + ' (' + key + ')'
       if ((value instanceof Quest)) {
-        console.log("Quest:" + title_with_id);
+        console.log('Quest:' + title_with_id);
         this.questList.push(title_with_id);
-      } else if ((value instanceof Narrative)) {
-        console.log("Narrative:" + title_with_id);
+      }
+      else if ((value instanceof Narrative)) {
+        console.log('Narrative:' + title_with_id);
         this.narrativeList.push(title_with_id);
       }
     });
   }
 
   // forwards the selected quest to the QuestEditorComponent
-  selectQuestByNumber(itemID: number): void {
+  selectQuestByNumber(itemID: number): void {}
 
-  }
-
-  constructor(private chaseService: ChaseService) { }
+  constructor(private chaseService: ChaseService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    console.log("ngOnInit()");
-    //this.chaseService.getChase(this.chaseID).subscribe(chase => (this.start_game(deserialize<Chase>(chase, Chase))));
+    console.log('ngOnInit()');
+    // this.chaseService.getChase(this.chaseID).subscribe(chase =>
+    // (this.start_game(deserialize<Chase>(chase, Chase))));
     this.chaseService.getChase(this.chaseID).subscribe(chase => {
-      //this.chase = deserialize<Chase>(chase, Chase)
+      // this.chase = deserialize<Chase>(chase, Chase)
       this.createNewChase();
 
       this.getDataFromChase();
-      this.questEditor.setGameElementToEdit(this.chase.gameElements.get(this.selectedQuest), true);
+      this.questEditor.setGameElementToEdit(
+          this.chase.gameElements.get(this.selectedQuest), true);
       this.questEditor.setChase(this.chase);
     });
-
   }
 
   ngAfterViewInit(): void {
-    console.log("ngAfterViewInit()");
+    console.log('ngAfterViewInit()');
   }
 
   // selectQuestByName(value: String) {
@@ -95,32 +98,33 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
   // }
 
   static parseIdFromGEString(text: string): number {
-    let id_text = text.substr(text.lastIndexOf("(") + 1); //)
+    let id_text = text.substr(text.lastIndexOf('(') + 1);  //)
     id_text = id_text.substr(0, id_text.length - 1);
 
     return +id_text;
   }
 
   questSelectorClicked(text: string) {
-    console.log("Quest Selector Clicked", text);
+    console.log('Quest Selector Clicked', text);
 
-    //parse id from name, not so pretty a solution TBH
+    // parse id from name, not so pretty a solution TBH
     this.selectedQuest = MainEditorComponent.parseIdFromGEString(text);
-    this.questEditor.setGameElementToEdit(this.chase.gameElements.get(this.selectedQuest), false);
+    this.questEditor.setGameElementToEdit(
+        this.chase.gameElements.get(this.selectedQuest), false);
     this.questEditor.setChase(this.chase);
   }
 
   deleteGameElement(text: string) {
     let delete_index = MainEditorComponent.parseIdFromGEString(text);
     this.chase.gameElements.delete(delete_index);
-    console.log("deleted GameElement:", text);
+    console.log('deleted GameElement:', text);
 
-    //todo reload component?
+    // todo reload component?
     this.getDataFromChase();
   }
 
   addQuest() {
-    console.log("addQuest()");
+    console.log('addQuest()');
 
     const quest = new Quest();
     quest.title = 'Neues Rätsel';
@@ -130,7 +134,7 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
   }
 
   addNarrative() {
-    console.log("addNarrative()");
+    console.log('addNarrative()');
 
     const narrative = new Narrative();
     narrative.title = 'New Narrative';
@@ -144,7 +148,7 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
 
     while (true) {
       if (!this.chase.gameElements.has(key)) {
-        console.log("Found next free key: ", key);
+        console.log('Found next free key: ', key);
         return key;
       }
       key++;
@@ -152,11 +156,11 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
   }
 
   createNewChase(): void {
-    console.log("TITLE: " + this.title);
-    console.log("Description: " + this.description);
-    console.log("Author: " + this.author);
+    console.log('TITLE: ' + this.title);
+    console.log('Description: ' + this.description);
+    console.log('Author: ' + this.author);
 
-    console.log("Creating new Chase from scratch...");
+    console.log('Creating new Chase from scratch...');
 
     this.chase = new Chase();
     this.chase.gameElements = new Map();
@@ -169,11 +173,11 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
   }
 
   uploadChase($event): void {
-    console.log("Opening file explorer to load local chase file...");
+    console.log('Opening file explorer to load local chase file...');
 
     console.log($event.target.files[0]);
     var reader = new FileReader();
-    reader.addEventListener("load", e => {
+    reader.addEventListener('load', e => {
       const json_string: string = reader.result as string;
       var json = JSON.parse(json_string);
       var chase = deserialize<Chase>(json, Chase);
@@ -184,14 +188,15 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
       this.selectedQuest = 1;
 
       this.getDataFromChase();
-      this.questEditor.setGameElementToEdit(this.chase.gameElements.get(this.selectedQuest), true);
+      this.questEditor.setGameElementToEdit(
+          this.chase.gameElements.get(this.selectedQuest), true);
       this.questEditor.setChase(this.chase);
     });
     reader.readAsText($event.target.files[0]);
   }
 
   downloadChase(): void {
-    console.log("Provide Chase as Download...");
+    console.log('Provide Chase as Download...');
 
     this.questEditor.localToGameElement();
     this.writeDataToChase();
@@ -199,13 +204,39 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
     var serialized = serialize(this.chase, true);
     var json = JSON.stringify(serialized, null, 2);
 
-    var blob = new Blob([json], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "chase.json");
+    var blob = new Blob([json], {type: 'text/plain;charset=utf-8'});
+    saveAs(blob, 'chase.json');
 
 
-    console.log("Push chase to server!", serialized);
+    console.log('Push chase to server!', serialized);
 
     this.chaseService.createChase(this.chase);
   }
 
+  loadChaseFromServer(): void {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    const dialogRef =
+        this.dialog.open(SelectChaseDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(data => {
+      console.log('Dialog output:', data);
+      if (data != '') {
+        console.log('Loading chase ' + data);
+        this.chaseService.getChase(data).subscribe(chase => {
+          this.chase = chase;
+
+          this.selectedQuest = 1;
+
+          this.getDataFromChase();
+          this.questEditor.setGameElementToEdit(
+              this.chase.gameElements.get(this.selectedQuest), true);
+          this.questEditor.setChase(this.chase);
+        });
+      }
+    });
+  }
 }

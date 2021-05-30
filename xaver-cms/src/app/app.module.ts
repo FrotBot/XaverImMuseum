@@ -50,6 +50,7 @@ import {
   OktaAuthGuard
 } from '@okta/okta-angular';
 import { LoggedOutComponent } from './components/logged-out/logged-out.component';
+import { SelectChaseDialogComponent } from './components/select-chase-dialog/select-chase-dialog.component';
 
 const config = {
   issuer: 'https://dev-379215.okta.com/oauth2/default',
@@ -93,7 +94,8 @@ const appRoutes: Routes = [
     CreateChaseDialogComponent,
     MainEditorComponent,
     QuestEditorComponent,
-    LoggedOutComponent
+    LoggedOutComponent,
+    SelectChaseDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -137,7 +139,8 @@ const appRoutes: Routes = [
     )
   ],
   entryComponents: [
-    CreateChaseDialogComponent
+    CreateChaseDialogComponent,
+    SelectChaseDialogComponent
   ],
   providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
   { provide: MatDialogRef, useValue: {} }, { provide: OKTA_CONFIG, useValue: config }],

@@ -1,0 +1,19 @@
+<div class="body">
+    <h1>Jagd von Server auswählen:</h1>
+
+
+    <div class="quest_selector">
+        <mat-selection-list #selected [multiple]="false" #questlist>
+          <mat-list-option *ngFor="let chase of chaseList.chases">
+            <div class=text-and-delete-container>
+              <div (click)="chaseSelectorClicked(chase.chaseId)">
+                {{chase.title}}
+              </div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+
+
+      <button id="abort" mat-raised-button color="primary" (click)="closeDialog()">Zurück</button>
+</div>
