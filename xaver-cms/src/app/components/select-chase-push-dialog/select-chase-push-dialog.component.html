@@ -1,0 +1,21 @@
+<div class="body">
+  <h1>Jagd auf Server pushen:</h1>
+
+
+  <div class="quest_selector">
+    <mat-selection-list #selected [multiple]="false" #questlist>
+      <mat-list-option *ngFor="let chase of chaseList.chases">
+        <div class=text-and-delete-container>
+          <div class="text-and-delete" (click)="chaseSelectorClicked(chase.chaseId)">
+            <div>
+              {{chase.title}}</div>
+            <div class="red" *ngIf="chase.chaseId != 'new'"> (überschreiben)</div>
+          </div>
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </div>
+
+
+  <button id="abort" mat-raised-button color="primary" (click)="closeDialog()">Zurück</button>
+</div>

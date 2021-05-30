@@ -3,6 +3,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {SELECT_PANEL_INDENT_PADDING_X} from '@angular/material/select';
 import {saveAs} from 'file-saver';
 import {SelectChaseDialogComponent} from 'src/app/components/select-chase-dialog/select-chase-dialog.component'
+import {SelectChasePushDialogComponent} from 'src/app/components/select-chase-push-dialog/select-chase-push-dialog.component'
 import {Chase, ChaseList, ChaseMetaData} from 'src/app/shared/models/chase';
 import {Description} from 'src/app/shared/models/description';
 import {GameElement} from 'src/app/shared/models/gameElement';
@@ -211,6 +212,16 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
     console.log('Push chase to server!', serialized);
 
     this.chaseService.createChase(this.chase);
+  }
+
+  pushChaseToServer(): void {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    const dialogRef =
+        this.dialog.open(SelectChasePushDialogComponent, dialogConfig);
   }
 
   loadChaseFromServer(): void {

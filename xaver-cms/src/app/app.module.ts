@@ -51,6 +51,7 @@ import {
 } from '@okta/okta-angular';
 import { LoggedOutComponent } from './components/logged-out/logged-out.component';
 import { SelectChaseDialogComponent } from './components/select-chase-dialog/select-chase-dialog.component';
+import { SelectChasePushDialogComponent } from './components/select-chase-push-dialog/select-chase-push-dialog.component';
 
 const config = {
   issuer: 'https://dev-379215.okta.com/oauth2/default',
@@ -95,7 +96,8 @@ const appRoutes: Routes = [
     MainEditorComponent,
     QuestEditorComponent,
     LoggedOutComponent,
-    SelectChaseDialogComponent
+    SelectChaseDialogComponent,
+    SelectChasePushDialogComponent
   ],
   imports: [
     BrowserModule,
