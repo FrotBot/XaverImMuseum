@@ -227,7 +227,7 @@ export class MainEditorComponent implements OnInit, AfterViewInit {
       if (data != '') {
         console.log('Loading chase ' + data);
         this.chaseService.getChase(data).subscribe(chase => {
-          this.chase = chase;
+          this.chase = deserialize<Chase>(chase, Chase);
 
           this.selectedQuest = 1;
 
